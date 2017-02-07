@@ -1,0 +1,16 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Feb 04 14:58:12 2017
+
+@author: bahareh
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import scipy
+from mpl_toolkits.mplot3d import Axes3D
+from scipy.ndimage import imread
+from scipy.ndimage.morphology import white_tophat
+from scipy.io import loadmat# -*- coding: utf-8 -*
+x=np.loadtxt(open("C:\Users\bahareh\.spyder\competition\x_train.csv"))

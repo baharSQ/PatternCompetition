@@ -77,25 +77,24 @@ if __name__== '__main__':
     print("4. Create submission file. Should be similar to y_train.csv.")
     print("5. Submit at kaggle.com and sit back.")
     
-    X_train, X_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=0)
-    model = LogisticRegression()
+    X_train, X_test, y_train, y_test = train_test_split(x_train, y_train, test_size=(3871/15485.0), random_state=0)
+#    model = LogisticRegression()
+    model = KNeighborsClassifier()
     model.fit(X_train, y_train)
-    #pred=model.predict(X_test)
-    Pred_probab=model.predict_proba(x_test)
-#    
-#    #accuracy_score(y_test, pred)
+    pred=model.predict(X_test)
+    Pred_probab=model.predict_proba(X_test)
+    Pred_Probab = Pred_probab [:,1:]
+#   
+    accuracy_score(y_test, pred)
 #        #  a = x_train.data   
 #            
 #    My_max=np.amax(Pred_probab, axis=1)
-#    f = open('result.csv', 'r+')
-#    #print('GeneId, Prediction')
-#    f.write('GeneId,Prediction\n')
-#    for i in range(0,len(My_max)):
-#        f.write("%d,%f\n" % (i+1, My_max[i]))
-#        
-#  #      "My name is %s and weight is %d kg!" % ('Zara', 21) 
-#        
-#    f.close()        
+    f = open('result.csv', 'r+')
+#   print('GeneId, Prediction')
+    f.write('GeneId,Prediction\n')
+    for i in range(0,len(Pred_Probab)):
+        f.write("%d,%f\n" % (i+1, Pred_Probab[i]))
+    f.close()        
 #        
 #    
         

@@ -16,6 +16,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import roc_auc_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+#from sklearn.model_selection import cross_val_score
+from sklearn import cross_validation
+
 if __name__== '__main__':
 
     data_path = "C:/Users/bahareh/.spyder/Data" # This folder holds the csv files
@@ -76,27 +79,44 @@ if __name__== '__main__':
     print("3. Fine tune the parameters and return to 2 until happy (optional)")
     print("4. Create submission file. Should be similar to y_train.csv.")
     print("5. Submit at kaggle.com and sit back.")
+ #   C_range = np.linspace (0.000001, 1)
     
-    X_train, X_test, y_train, y_test = train_test_split(x_train, y_train, test_size=(3871/15485.0), random_state=0)
-#    model = LogisticRegression()
-    model = KNeighborsClassifier()
-    model.fit(X_train, y_train)
-    pred=model.predict(X_test)
-    Pred_probab=model.predict_proba(X_test)
+#   X_train, X_test, y_train, y_test = train_test_split(x_train, y_train, test_size=(3871/15485.0), random_state=0)
+    model = LogisticRegression()
+##    model = KNeighborsClassifier()
+    model.C = 0.01
+    model.penalty = 'l1' 
+    model.fit(x_train, y_train)
+# #   pred=model.predict(x_test)
+    Pred_probab=model.predict_proba(x_test)
     Pred_Probab = Pred_probab [:,1:]
 #   
-    accuracy_score(y_test, pred)
+  #  accuracy_score(y_test, pred)
 #        #  a = x_train.data   
+#   
+   
+#   C_range = 10.0 ** np.arange(-6, 1) 
+#    for C in C_range:
+#        for penalty in ["l1", "l2"]:
+#            model.C = C
+#            model.penalty = penalty
+#           
+##            y_pred = model.predict(X_test)
+##            score = accuracy_score(y_test, y_pred)
+#            scores = cross_validation.cross_val_score(model, x_train, y_train)
 #            
+#            print penalty, C, scores.mean()
+#          
+          
 #    My_max=np.amax(Pred_probab, axis=1)
     f = open('result.csv', 'r+')
-#   print('GeneId, Prediction')
+ #   print('GeneId, Prediction')
     f.write('GeneId,Prediction\n')
     for i in range(0,len(Pred_Probab)):
         f.write("%d,%f\n" % (i+1, Pred_Probab[i]))
     f.close()        
-#        
-#    
+        
+    
         
      #   print(i+1, "%.2f" % round(My_max[i],2))
     

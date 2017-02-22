@@ -11,13 +11,13 @@ Created on Sat Feb 04 16:03:13 2017
 
 import numpy as np
 import os
-from sklearn.cross_validation import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import roc_auc_score
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-#from sklearn.model_selection import cross_val_score
-from sklearn import cross_validation
+from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn import decomposition, cross_validation
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV, train_test_split
+ 
 
 if __name__== '__main__':
 
@@ -82,7 +82,7 @@ if __name__== '__main__':
  #   C_range = np.linspace (0.000001, 1)
     
 #   X_train, X_test, y_train, y_test = train_test_split(x_train, y_train, test_size=(3871/15485.0), random_state=0)
-    model = LogisticRegression()
+  #  model = LogisticRegression()
 ##    model = KNeighborsClassifier()
  #   model.C = 0.01
  #   model.penalty = 'l1' 
@@ -95,18 +95,42 @@ if __name__== '__main__':
 #        #  a = x_train.data   
 #   
    
-    C_range = 10.0 ** np.arange(-6, 1) 
-    for C in C_range:
-        for penalty in ["l1", "l2"]:
-            model.C = C
-            model.penalty = penalty
-           
-#            y_pred = model.predict(X_test)
-#            score = accuracy_score(y_test, y_pred)
-            scores = cross_validation.cross_val_score(model, x_train, y_train)
+#    C_range = 10.0 ** np.arange(-6, 1) 
+#    for C in C_range:
+#        for penalty in ["l1", "l2"]:
+#            model.C = C
+#            model.penalty = penalty
+#           
+##            y_pred = model.predict(X_test)
+##            score = accuracy_score(y_test, y_pred)
+#            scores = cross_validation.cross_val_score(model, x_train, y_train)
+#            
+#            print penalty, C, scores.mean()
             
-            print penalty, C, scores.mean()
-#          
+#### using principal component analysis (PCA)
+ 
+ #   X_train, X_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=0)
+ 
+    clf = LogisticRegression(penalty='l1', C=0.01)    # 0.854698094931
+#    clf = KNeighborsClassifier()          # best score: 0.854617, best parameters: {'logistic__C': 1.0, 'pca__n_components': 60}
+    pca = decomposition.PCA()
+#    
+    pipe = Pipeline(steps=[('pca', pca), ('KNN', clf)])
+    pca.n_components = range(10,110,10)   ### [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    Cs = np.logspace(-4, 4, 3)
+    Cs = 10.0 ** np.arange(-6, 1)
+#    k = np.arange(10)+1
+#    parameters = {'n_neighbors' : k}
+    #Parameters of pipelines can be set using ‘__’ separated parameter names:
+    model = GridSearchCV(clf, parameters)
+    model.fit(x_train, y_train)
+    print("best score: %f, best parameters: %s" % (model.best_score_, model.best_params_))
+    print("best estimator: %s" % (model.best_estimator_))
+    ## best score: 0.854617, best parameters: {'logistic__C': 1.0, 'pca__n_components': 60}
+# 
+#    Pred_probab=model.predict_proba(x_test)
+#    Pred_Probab = Pred_probab [:,1:]
+##          
           
 #    My_max=np.amax(Pred_probab, axis=1)
 #    f = open('result.csv', 'r+')
@@ -120,7 +144,29 @@ if __name__== '__main__':
         
      #   print(i+1, "%.2f" % round(My_max[i],2))
     
+# DEEP LEARNING
+#from keras import backend as k
+#k.set_image_dim_ordering('th')
+#from keras.models import Sequential
+#from keras.layers import Dense, Flatten
+#from keras.layers.convolutional import Convolution1D,MaxPooling1D
+#from sklearn.cross_validation import train_test_split
+#from keras.utils import np_units
 
-    
-    
+
+#N = 10 # Number of feature maps
+#w, h = 3, 3 # Conv. window size
+#model = Sequential()
+#model.add(Convolution1D(nb_filter = N,
+#                        activation = 'relu',border_mode = 'same'))
+#model.add(MaxPooling1D((2,2)))
+#model.add(Convolution1D(nb_filter = N,
+#                        border_mode = 'same',activation = 'relu'))
+#model.add(MaxPooling1D((2,2)))
+#model.add(Flatten())
+#model.add(Dense(2, activation = 'sigmoid'))
+#model.compile(loss='categorical_crossentropy',optimizer='sgd',metrics=['accuracy'])
+#model.fit(X_train,y_train,batch_size=32,nb_epoch=20, validation_data=[X_test,y_test])  # we pass one data array per model input
+#    
+#    
     
